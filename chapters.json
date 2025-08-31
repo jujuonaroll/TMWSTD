@@ -1,0 +1,17 @@
+[
+  {
+    "title": "Chapter 1",
+    "pages": [
+      "chapters/chapter1/1.png",
+      "chapters/chapter1/2.png",
+      "chapters/chapter1/3.png"
+    ]
+  },
+  {
+    "title": "Chapter 2",
+    "pages": [
+      "chapters/chapter2/1.png",
+      "chapters/chapter2/2.png"
+    ]
+  }
+]

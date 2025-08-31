@@ -1,0 +1,54 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f4f4f4;
+  flex-direction: column;
+}
+
+#chapter-list {
+  text-align: center;
+}
+
+#chapter-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+#chapter-list li {
+  cursor: pointer;
+  padding: 10px;
+  font-size: 20px;
+  margin: 5px 0;
+  background: #fff;
+  border-radius: 5px;
+  transition: 0.2s;
+}
+
+#chapter-list li:hover {
+  background: #ddd;
+}
+
+#reader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#comic-page {
+  max-width: 100%;
+  max-height: 80vh;
+  margin-bottom: 20px;
+  transition: transform 0.2s;
+}
+
+#controls button {
+  margin: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}

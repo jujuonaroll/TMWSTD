@@ -1,23 +1,535 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comic Reader</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Man Who Saves The Day</title>
+    <link rel="icon" href="icon.png" type="image/png">
+    <!-- Tailwind CSS from CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #2e3a51;
+            background-image: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%234d648d" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-2v2h4v-2zm0-10V14h-4v6h-2v4h6zm-10 0v-6h-4V8h-2v6h-2v2h-2v4h10v-2zm-10 0v-6h-2V8H8v10h4v2h4v-6zm24-2v-2h-4v-6h-2v6h-2v2h4v2h2v-2zm0-12V8h-2v4h2v2h2v-2zm-12 0v-4h-2v4h-2v2h4v-2zm-12 0v-4h-2v4h2v2h2v-2zm-2 20v-2h-2v2h-2v2h4v-2zm-8-6v-6h-2v6h-2v2h4v-2z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+            color: #f4f1de;
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            position: relative;
+        }
+
+        /* Soft Grunge Paper Overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.6" numOctaves="3" stitchTiles="stitch"%3E%3C/feTurbulence%3E%3C/filter%3E%3Crect width="100" height="100" style="filter:url(%23noise); fill:transparent;"/%3E%3C/svg%3E');
+            opacity: 0.15;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Dust Particles Effect */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle, #f4f1de 1px, transparent 1px);
+            background-size: 15px 15px;
+            opacity: 0.05;
+            animation: floatUp 300s linear infinite;
+            pointer-events: none;
+            z-index: 11;
+        }
+
+        @keyframes floatUp {
+            0% { background-position: 0 100%; }
+            100% { background-position: 0 0; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out forwards;
+        }
+
+        .fade-out {
+            animation: fadeOut 0.5s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .controls-panel {
+            position: fixed;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 500px;
+            background-color: #4d648d;
+            border: 4px solid #7283d3;
+            border-radius: 0 0 1rem 1rem;
+            padding: 1rem;
+            box-shadow: 8px 8px 0px #2e3a51;
+            transition: top 0.5s ease-in-out;
+            z-index: 999;
+        }
+
+        .controls-panel.visible {
+            top: 0;
+        }
+        
+        /* New styles for fixed navigation buttons */
+        .fixed-nav-btn-container {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 99;
+        }
+
+        .fixed-nav-btn {
+            background-color: rgba(77, 100, 141, 0.7); /* Semi-transparent background */
+            backdrop-filter: blur(5px);
+            color: #f4f1de;
+            border: 2px solid #7283d3;
+            border-radius: 9999px; /* Full rounded corners */
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, background-color 0.2s;
+            box-shadow: 4px 4px 0px rgba(46, 58, 81, 0.5); /* Semi-transparent shadow */
+        }
+
+        .fixed-nav-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+            background-color: rgba(114, 131, 211, 0.8);
+        }
+        
+        .fixed-nav-btn-right {
+            right: 1.5rem;
+        }
+        
+        .fixed-nav-btn-left {
+            left: 1.5rem;
+        }
+
+        .fixed-nav-btn-left:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .scroll-to-top-btn {
+            position: fixed;
+            right: 1.5rem;
+            bottom: 1.5rem;
+            background-color: #4d648d;
+            border-radius: 9999px;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 4px 4px 0px #2e3a51;
+            cursor: pointer;
+            z-index: 50;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .scroll-to-top-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .button-rustic {
+            background-color: #7283d3;
+            color: #f4f1de;
+            box-shadow: 4px 4px 0px #4d648d;
+            border: 2px solid #4d648d;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .button-rustic:hover {
+            transform: translateY(2px) translateX(2px);
+            box-shadow: 2px 2px 0px #4d648d;
+        }
+        .banner-bg {
+            background-image: url('Banner.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100%;
+            height: 120px; /* Adjust height as needed */
+            max-width: 4xl;
+        }
+    </style>
 </head>
-<body>
-  <div id="chapter-list"></div>
-  <div id="reader" style="display:none;">
-    <img id="comic-page" src="" alt="Comic Page">
-    <div id="controls">
-      <button id="prev">Previous</button>
-      <button id="next">Next</button>
-      <button id="zoom-in">Zoom In</button>
-      <button id="zoom-out">Zoom Out</button>
-      <button id="back">Back to Chapters</button>
+<body class="text-white">
+
+    <!-- The Home Page View -->
+    <div id="homeView">
+        <!-- Header Section with the new image banner and the Hero Message -->
+        <header class="bg-[#7283d3] flex flex-col items-center justify-center p-2 z-50">
+            <!-- Replaced img tag with a div and background image -->
+            <div class="banner-bg"></div>
+            
+            <!-- "Created by" panel moved below the banner -->
+            <div id="heroMessagePanel" class="bg-[#4d648d] p-4 rounded-xl shadow-lg text-center hidden md:block mt-4 mb-4" style="box-shadow: 4px 4px 0px #2e3a51;">
+                <div class="text-xl tracking-wide font-light text-gray-200">
+                    "Not the hero we deserve,<br>but the hero we need"<br>
+                    - Marzuk, creator of the series
+                </div>
+            </div>
+
+            <div class="container mx-auto flex flex-col md:flex-row items-center justify-between p-4 gap-4 md:gap-8">
+                <!-- Patreon Section - now a clickable button with an image -->
+                <a href="https://patreon.com/MarzukArt" target="_blank" class="w-full md:w-1/3 h-20 bg-[#4d648d] rounded-lg flex items-center justify-center p-2 transform transition-transform duration-300 hover:scale-105" style="box-shadow: 4px 4px 0px #2e3a51;">
+                    <img src="patreon.png" alt="Support on Patreon" class="w-full h-full object-contain" />
+                </a>
+                
+                <!-- Search Bar -->
+                <div class="relative w-full md:w-2/3">
+                    <input id="searchInput" type="text" placeholder="Search..." class="w-full h-12 pl-4 pr-10 rounded-full text-gray-800 focus:outline-none" style="border: 2px solid #4d648d;">
+                    <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+
+                <!-- Last Read Panel -->
+                <div id="lastReadPanel" class="bg-[#4d648d] p-4 rounded-xl shadow-lg text-center cursor-pointer hidden md:flex flex-col items-center justify-center" style="box-shadow: 4px 4px 0px #2e3a51;">
+                    <p class="text-sm font-semibold text-gray-200">Last Read</p>
+                    <p id="lastReadTitle" class="text-lg font-bold text-white mt-1"></p>
+                </div>
+            </div>
+        </header>
+        <main class="container mx-auto p-4 md:p-8 pt-4">
+            <!-- This container holds the dynamically rendered thumbnails and search results -->
+            <div id="thumbnails-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                <!-- Thumbnails will be rendered here by JavaScript -->
+            </div>
+        </main>
     </div>
-  </div>
-  <script src="script.js"></script>
+
+    <!-- The Reading Mode View -->
+    <div id="readerView" class="hidden">
+        
+        <!-- Fixed Previous Button -->
+        <div id="previousChapterContainer" class="fixed-nav-btn-container fixed-nav-btn-left">
+            <button id="previousChapterBtn" class="fixed-nav-btn disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Fixed Next Button -->
+        <div id="nextChapterContainer" class="fixed-nav-btn-container fixed-nav-btn-right">
+            <button id="nextChapterBtn" class="fixed-nav-btn disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
+        </div>
+        
+        <div id="comicPages" class="pt-24 container mx-auto flex flex-col items-center gap-4">
+            <!-- Comic pages will be injected here -->
+        </div>
+
+        <!-- The control panel that fades in -->
+        <div id="controlsPanel" class="controls-panel flex items-center justify-between">
+            <button id="backToHomeBtn" class="button-rustic px-4 py-2 rounded-full font-bold">Back to Home</button>
+            <select id="chapterSelect" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-full font-bold">
+                <!-- Options will be populated by JS -->
+            </select>
+            <button id="bookmarkBtn" class="button-rustic px-4 py-2 rounded-full font-bold">Bookmark</button>
+        </div>
+
+        <!-- Floating scroll to top button -->
+        <div id="scrollToTopBtn" class="scroll-to-top-btn hidden">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="color: #f4f1de;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chapters = [
+                {
+                    chapter: 1,
+                    title: 'The First Encounter',
+                    imageUrl: 'https://placehold.co/400x250/7283d3/ffffff?text=Chapter+1',
+                    pages: [
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+1',
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+2',
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+3',
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+4',
+                    ]
+                },
+                {
+                    chapter: 2,
+                    title: 'A New Hero',
+                    imageUrl: 'https://placehold.co/400x250/4d648d/ffffff?text=Chapter+2',
+                    pages: [
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+1',
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+2',
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+3',
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+4',
+                    ]
+                },
+                {
+                    chapter: 3,
+                    title: 'The Dark Secret',
+                    imageUrl: 'https://placehold.co/400x250/2e3a51/ffffff?text=Chapter+3',
+                    pages: [
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+1',
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+2',
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+3',
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+4',
+                    ]
+                },
+                {
+                    chapter: 4,
+                    title: 'The Betrayal',
+                    imageUrl: 'https://placehold.co/400x250/7283d3/ffffff?text=Chapter+4',
+                    pages: [
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+1',
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+2',
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+3',
+                        'https://placehold.co/800x1200/7283d3/ffffff?text=Page+4',
+                    ]
+                },
+                {
+                    chapter: 5,
+                    title: 'Final Stand',
+                    imageUrl: 'https://placehold.co/400x250/4d648d/ffffff?text=Chapter+5',
+                    pages: [
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+1',
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+2',
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+3',
+                        'https://placehold.co/800x1200/4d648d/ffffff?text=Page+4',
+                    ]
+                },
+                {
+                    chapter: 6,
+                    title: 'A Glimmer of Hope',
+                    imageUrl: 'https://placehold.co/400x250/2e3a51/ffffff?text=Chapter+6',
+                    pages: [
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+1',
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+2',
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+3',
+                        'https://placehold.co/800x1200/2e3a51/ffffff?text=Page+4',
+                    ]
+                }
+            ];
+
+            // UI Elements
+            const homeView = document.getElementById('homeView');
+            const readerView = document.getElementById('readerView');
+            const thumbnailsContainer = document.getElementById('thumbnails-container');
+            const searchInput = document.getElementById('searchInput');
+            const heroMessagePanel = document.getElementById('heroMessagePanel');
+            const lastReadPanel = document.getElementById('lastReadPanel');
+            const lastReadTitle = document.getElementById('lastReadTitle');
+            const comicPagesContainer = document.getElementById('comicPages');
+            const backToHomeBtn = document.getElementById('backToHomeBtn');
+            const chapterSelect = document.getElementById('chapterSelect');
+            const bookmarkBtn = document.getElementById('bookmarkBtn');
+            const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+            const controlsPanel = document.getElementById('controlsPanel');
+
+            // State variables
+            let controlsVisible = false;
+            let currentChapterId = null;
+
+            // Utility functions
+            const showView = (view, chapterId = null, scrollPosition = 0) => {
+                if (view === 'home') {
+                    homeView.classList.remove('hidden');
+                    readerView.classList.add('hidden');
+                    window.scrollTo(0, 0);
+                    heroMessagePanel.classList.remove('hidden');
+                } else {
+                    currentChapterId = chapterId;
+                    homeView.classList.add('hidden');
+                    readerView.classList.remove('hidden');
+                    scrollToTopBtn.classList.remove('hidden');
+                    renderComicPages(chapterId);
+                    chapterSelect.value = chapterId;
+                    updateNavigationButtons();
+                    setTimeout(() => {
+                        window.scrollTo(0, scrollPosition);
+                    }, 100);
+                }
+            };
+            
+            const updateNavigationButtons = () => {
+                const currentIndex = chapters.findIndex(ch => ch.chapter === currentChapterId);
+                previousChapterBtn.disabled = currentIndex === 0;
+                nextChapterBtn.disabled = currentIndex === chapters.length - 1;
+            };
+
+            const updateLastReadPanel = () => {
+                const savedState = JSON.parse(localStorage.getItem('lastRead'));
+                if (savedState && savedState.chapterId) {
+                    const chapter = chapters.find(ch => ch.chapter === savedState.chapterId);
+                    if (chapter) {
+                        lastReadTitle.textContent = chapter.title;
+                        lastReadPanel.classList.remove('hidden');
+                    }
+                } else {
+                    lastReadPanel.classList.add('hidden');
+                }
+            };
+
+            const renderThumbnails = (filteredChapters) => {
+                thumbnailsContainer.innerHTML = '';
+                if (filteredChapters.length === 0) {
+                    thumbnailsContainer.innerHTML = `<p class="text-center text-gray-400">No chapters found. Try another search.</p>`;
+                } else {
+                    filteredChapters.forEach(chapter => {
+                        const cardHtml = `
+                            <div class="bg-[#4d648d] p-4 rounded-xl transform transition-transform duration-300 hover:scale-105" style="box-shadow: 4px 4px 0px #2e3a51;">
+                                <a href="#" class="thumbnail-link" data-chapter="${chapter.chapter}">
+                                    <img src="${chapter.imageUrl}" alt="Chapter ${chapter.chapter} Thumbnail" class="w-full h-48 rounded-lg object-cover mb-2" style="border: 2px solid #7283d3;">
+                                    <div class="text-center font-bold text-lg text-[#f4f1de]">${chapter.title}</div>
+                                </a>
+                            </div>
+                        `;
+                        thumbnailsContainer.innerHTML += cardHtml;
+                    });
+                }
+            };
+
+            const renderComicPages = (chapterId) => {
+                comicPagesContainer.innerHTML = '';
+                const chapter = chapters.find(ch => ch.chapter === chapterId);
+                if (chapter) {
+                    chapter.pages.forEach(pageUrl => {
+                        const pageHtml = `<img src="${pageUrl}" class="w-full md:max-w-3xl rounded-lg shadow-lg" alt="Comic Page" style="border: 4px solid #7283d3; box-shadow: 8px 8px 0px #2e3a51;">`;
+                        comicPagesContainer.innerHTML += pageHtml;
+                    });
+                }
+            };
+            
+            const populateChapterSelect = () => {
+                chapterSelect.innerHTML = '';
+                chapters.forEach(chapter => {
+                    const option = document.createElement('option');
+                    option.value = chapter.chapter;
+                    option.textContent = `Chapter ${chapter.chapter}`;
+                    chapterSelect.appendChild(option);
+                });
+            };
+
+            // Event Listeners
+            searchInput.addEventListener('input', (event) => {
+                const query = event.target.value.toLowerCase();
+                const filteredChapters = chapters.filter(chapter => {
+                    return (
+                        chapter.title.toLowerCase().includes(query) ||
+                        chapter.chapter.toString().includes(query)
+                    );
+                });
+                renderThumbnails(filteredChapters);
+            });
+
+            // Home view thumbnail clicks
+            thumbnailsContainer.addEventListener('click', (event) => {
+                const link = event.target.closest('.thumbnail-link');
+
+                if (link) {
+                    event.preventDefault();
+                    const chapterId = parseInt(link.dataset.chapter, 10);
+                    const savedState = JSON.parse(localStorage.getItem('lastRead'));
+                    const scrollPosition = savedState ? savedState.scrollPosition : 0;
+                    localStorage.setItem('lastRead', JSON.stringify({ chapterId: chapterId, scrollPosition: scrollPosition }));
+                    showView('reader', chapterId, scrollPosition);
+                }
+            });
+
+            // Last read panel click
+            lastReadPanel.addEventListener('click', () => {
+                const savedState = JSON.parse(localStorage.getItem('lastRead'));
+                if (savedState) {
+                    showView('reader', savedState.chapterId, savedState.scrollPosition);
+                }
+            });
+
+            // Back to home button in reader view
+            backToHomeBtn.addEventListener('click', () => {
+                showView('home');
+                updateLastReadPanel();
+            });
+            
+            // Chapter select in reader view
+            chapterSelect.addEventListener('change', (event) => {
+                const chapterId = parseInt(event.target.value, 10);
+                renderComicPages(chapterId);
+                // When changing chapters via the dropdown, reset the scroll position
+                const scrollPosition = 0; 
+                localStorage.setItem('lastRead', JSON.stringify({ chapterId: chapterId, scrollPosition: scrollPosition }));
+                window.scrollTo(0, 0);
+            });
+
+            // Next/Previous chapter buttons
+            const nextChapterBtn = document.getElementById('nextChapterBtn');
+            const previousChapterBtn = document.getElementById('previousChapterBtn');
+            nextChapterBtn.addEventListener('click', () => {
+                const currentIndex = chapters.findIndex(ch => ch.chapter === currentChapterId);
+                if (currentIndex < chapters.length - 1) {
+                    const nextChapter = chapters[currentIndex + 1];
+                    localStorage.setItem('lastRead', JSON.stringify({ chapterId: nextChapter.chapter, scrollPosition: 0 }));
+                    showView('reader', nextChapter.chapter, 0);
+                }
+            });
+
+            previousChapterBtn.addEventListener('click', () => {
+                const currentIndex = chapters.findIndex(ch => ch.chapter === currentChapterId);
+                if (currentIndex > 0) {
+                    const previousChapter = chapters[currentIndex - 1];
+                    localStorage.setItem('lastRead', JSON.stringify({ chapterId: previousChapter.chapter, scrollPosition: 0 }));
+                    showView('reader', previousChapter.chapter, 0);
+                }
+            });
+
+            // Scroll to top button
+            scrollToTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Bookmark button
+            bookmarkBtn.addEventListener('click', () => {
+                const currentChapter = chapterSelect.value;
+                const scrollPosition = window.scrollY;
+                localStorage.setItem(`bookmark-ch-${currentChapter}`, JSON.stringify({ scrollPosition }));
+                localStorage.setItem('lastRead', JSON.stringify({ chapterId: parseInt(currentChapter, 10), scrollPosition: scrollPosition }));
+            });
+
+            // Tap to show controls
+            comicPagesContainer.addEventListener('click', () => {
+                controlsVisible = !controlsVisible;
+                if (controlsVisible) {
+                    controlsPanel.classList.add('visible');
+                } else {
+                    controlsPanel.classList.remove('visible');
+                }
+            });
+
+            // Initial render
+            renderThumbnails(chapters);
+            populateChapterSelect();
+            updateLastReadPanel();
+        });
+    </script>
 </body>
 </html>
+
